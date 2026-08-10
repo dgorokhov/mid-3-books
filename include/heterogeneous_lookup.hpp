@@ -40,4 +40,5 @@ struct TransparentStringHash {
         return std::hash<std::string_view>{}(s);
 
     }  // namespace bookdb
+};
 }

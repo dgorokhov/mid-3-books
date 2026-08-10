@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(BookDB VERSION 1.0.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,19 +11,32 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(-fmax-errors=3)
 endif()
 
-# Ищем необходимые библиотеки
+# Ищем необходимые библиотеки (Conan передаст их сюда)
 find_package(GTest REQUIRED)
 
-file(GLOB HEADER_FILES "${CMAKE_SOURCE_DIR}/include/*.hpp")
+# Список всех заголовочных файлов проекта (лучше перечислить явно, чтобы CMake отслеживал изменения)
+set(HEADER_FILES
+    include/book.hpp
+    include/book_database.hpp
+    include/comparators.hpp
+    include/concepts.hpp
+    include/filters.hpp
+    include/heterogeneous_lookup.hpp
+    include/statistics.hpp
+)
 
-# Создаём статическую библиотеку
-add_library(${PROJECT_NAME}_imp STATIC "${CMAKE_SOURCE_DIR}/src/main.cpp" ${HEADER_FILES})
+# Поскольку у вас контейнер шаблонный и весь код живет в хедерах,
+# мы создаем INTERFACE библиотеку (header-only). Ей не нужны .cpp файлы!
+add_library(${PROJECT_NAME}_imp INTERFACE)
 
-target_include_directories(${PROJECT_NAME}_imp PUBLIC
+# Привязываем хедеры к интерфейсной библиотеке, чтобы они отображались в IDE
+target_sources(${PROJECT_NAME}_imp INTERFACE ${HEADER_FILES})
+
+target_include_directories(${PROJECT_NAME}_imp INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Создаём исполняемый таргет и линкуем к нему статическую библиотеку
+# Создаём основной исполняемый файл для рантайма
 add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/src/main.cpp")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_imp)
 
@@ -34,9 +47,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_imp)
 # Рекурсивно ищем все используемые в тестах .cpp файлы
 file(GLOB TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/tests/*.cpp")
 
-add_executable(unit_tests "${TEST_SRC_FILES}")
+add_executable(unit_tests ${TEST_SRC_FILES})
 target_link_libraries(unit_tests PRIVATE ${PROJECT_NAME}_imp GTest::GTest GTest::Main)
-target_include_directories(unit_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Включаем тестирование
 enable_testing()
