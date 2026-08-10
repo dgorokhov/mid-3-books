@@ -3,16 +3,28 @@
 #include <format>
 #include <stdexcept>
 #include <string_view>
-
+#include <array>
 namespace bookdb {
 
 enum class Genre { Fiction, NonFiction, SciFi, Biography, Mystery, Unknown };
 
 // Ваш код для constexpr преобразования строк в enum::Genre и наоборот здесь
 
+// constexpr преобразование строк в Genre
 constexpr Genre GenreFromString(std::string_view s) {
-    // Ваш код здесь
+    if (s == "Fiction")    return Genre::Fiction;
+    if (s == "NonFiction") return Genre::NonFiction;
+    if (s == "SciFi")      return Genre::SciFi;
+    if (s == "Biography")  return Genre::Biography;
+    if (s == "Mystery")    return Genre::Mystery;
     return Genre::Unknown;
+}
+
+constexpr std::string_view StringFromGenre(Genre g) {
+    static constexpr std::array<std::string_view, 6> genreStrings
+        {"Fiction",   "NonFiction", "SciFi",
+        "Biography", "Mystery",    "Unknown"};
+    return genreStrings[static_cast<int>(g)];
 }
 
 struct Book {
@@ -36,8 +48,9 @@ struct formatter<bookdb::Genre, char> {
     auto format(const bookdb::Genre g, FormatContext &fc) const {
         std::string genre_str;
 
+        genre_str = StringFromGenre(g);
         // clang-format off
-        using bookdb::Genre;
+/*        using bookdb::Genre;
         switch (g) {
             case Genre::Fiction:    genre_str = "Fiction"; break;
             case Genre::Mystery:    genre_str = "Mystery"; break;
@@ -49,6 +62,7 @@ struct formatter<bookdb::Genre, char> {
                 throw logic_error{"Unsupported bookdb::Genre"};
             }
         // clang-format on
+        */
         return format_to(fc.out(), "{}", genre_str);
     }
 
@@ -56,6 +70,24 @@ struct formatter<bookdb::Genre, char> {
         return ctx.begin();  // Просто игнорируем пользовательский формат
     }
 };
+
+// Реализация std::formatter для класса Book
+template <>
+struct formatter<bookdb::Book, char> {
+
+    template <typename FormatContext>
+    auto format(const bookdb::Book& b, FormatContext &fc) const {
+        // Форматируем книгу в удобном и понятном виде
+        return format_to(fc.out(), 
+            "Author: {}, Title: {}, Year: {}, Genre: {}, Rating: {:.1f}, Read Count: {}", 
+            b.author, b.title, b.year, b.genre, b.rating, b.read_count);
+    }
+    constexpr auto parse(format_parse_context &ctx) {
+        return ctx.begin(); 
+    }
+
+};
+
 
 // Ваш код для std::formatter<Book> здесь
 
