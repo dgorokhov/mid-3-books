@@ -38,10 +38,29 @@ struct Book {
     int read_count;
 
     // Ваш код для конструкторов здесь
+        // 1. Конструктор, принимающий Genre как enum
+    constexpr Book(std::string_view auth, std::string t, int y, Genre g, double r, int rc)
+        : author(auth)
+        , title(std::move(t))
+        , year(y)
+        , genre(g)
+        , rating(r)
+        , read_count(rc) {}
+
+    // 2. Конструктор, принимающий Genre в виде строки (std::string_view)
+    constexpr Book(std::string_view auth, std::string t, int y, std::string_view g_str, double r, int rc)
+        : author(auth)
+        , title(std::move(t))
+        , year(y)
+        , genre(GenreFromString(g_str))
+        , rating(r)
+        , read_count(rc) {}
 };
+
 }  // namespace bookdb
 
 namespace std {
+
 template <>
 struct formatter<bookdb::Genre, char> {
     template <typename FormatContext>
