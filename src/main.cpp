@@ -29,23 +29,27 @@ int main(int argc, const char** argv) {
 
     // Sorts
     std::sort(db.begin(), db.end(), comp::LessByAuthor{});
-    std::print("Books sorted by author: {}\n\n==================\n", db);
+    std::print("Books sorted by author: {}", db);
 
+    std::print ("\n\n==================\n");
     // Исправлено имя компаратора на GreaterByRating, который мы реализовали
     std::sort(db.begin(), db.end(), comp::LessByRating{});
-    std::print("Books sorted by popularity: {}\n\n==================\n", db);
-
-
+    std::print("Books sorted by popularity: {}", db);
+Al
+    std::print ("\n\n==================\n");
     auto avrRating = calculateAverageRating(db);
     std::print("Average books rating in library: {}\n", avrRating);
-/*
-   // Author histogram
-    auto histogram = buildAuthorHistogramFlat(db);
-    std::print("Author histogram: {}", histogram);
 
-/*    // Ratings
+   // Author histogram
+    std::print ("\n\n==================\n");
+    auto histogram = buildAuthorHistogramFlat(db);
+    // Оборачиваем в AuthorHistogramView для кастомного форматирования
+    std::print("Author histogram:\n{}", bookdb::AuthorHistogramView{histogram});
+
+    // Ratings
+    std::print ("\n\n==================\n");
     auto genreRatings = calculateGenreRatings(db.begin(), db.end());
-    std::print("\n\nAverage ratings by genres: {}\n", genreRatings);
+    std::print("\n\nAverage ratings by genres: {}\n", bookdb::GenreHistogramView{.data=genreRatings});
 
     
     // Filters

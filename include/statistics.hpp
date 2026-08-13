@@ -29,6 +29,7 @@ template <BookContainerLike T, typename Comparator = TransparentStringLess>
 auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {}) {
 
     // ключ ==  string_view == авторов базы данных
+    //AuthorHistogramView result;
     std::vector<std::pair<std::string_view, size_t>> result;
     // Заранее резервируем память под всех авторов для скорости
     result.reserve(cont.GetAuthors().size());

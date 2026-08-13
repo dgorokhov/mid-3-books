@@ -106,10 +106,58 @@ private:
     AuthorContainer authors_;
 };
 
+struct AuthorHistogramView {
+    const std::vector<std::pair<std::string_view, size_t>>& data;
+};
+
+struct GenreHistogramView {
+    const std::vector<std::pair<bookdb::Genre, double>>& data;
+};
+
 }  // namespace bookdb
 
 namespace std {
+
+
+template <>
+struct formatter<bookdb::AuthorHistogramView, char> {
+    constexpr auto parse(format_parse_context &ctx) {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const bookdb::AuthorHistogramView &view, FormatContext &fc) const {
+        auto out = fc.out(); // Сохраняем начальный итератор вывода
+        
+        format_to(fc.out(), "Authors in BookDatabase : (size = {}):\n\n", view.data.size());
+        for (const auto& [author, count] : view.data) {
+            // Перезаписываем итератор вывода при каждом шаге
+            out = format_to(out, "  {} : {}\n", author, count);
+        } 
+        return out;
+    }
+};
+
+
+template <>
+struct formatter<bookdb::GenreHistogramView, char> {
+    constexpr auto parse(format_parse_context &ctx) {
+        return ctx.begin();
+    }
+    template <typename FormatContext>
+    auto format(const bookdb::GenreHistogramView &view, FormatContext &fc) const {
+        auto out = fc.out(); // Сохраняем начальный итератор вывода
+        
+        format_to(fc.out(), "Genres in BookDatabase : (size = {}):\n\n", view.data.size());
+        for (const auto& [genre, popularity] : view.data) {
+            // Перезаписываем итератор вывода при каждом шаге
+            out = format_to(out, "  {} : {}\n", bookdb::StringFromGenre(genre), popularity);
+        } 
+        return out;
+    }
+};
     
+
 template <>
 struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {
     constexpr auto parse(format_parse_context &ctx) {
@@ -132,32 +180,6 @@ struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {
     }
 };
   // namespace std
-
-template <>
-struct formatter<std::vector<std::pair<std::string_view, size_t>>> {
-    constexpr auto parse(format_parse_context &ctx) {
-        return ctx.begin();
-    }
-    template <typename FormatContext>
-    auto format(const std::vector<std::pair<std::string_view, size_t>> &hist, FormatContext &fc) const {
-        for (const auto& pair : hist) {
-           format_to(fc.out(), "Author {} : {}\n", pair.first, pair.second);
-        } 
-    }
-};
-
-template <>
-struct formatter<std::vector<std::pair<bookdb::Genre, double>>> {
-    constexpr auto parse(format_parse_context &ctx) {
-        return ctx.begin();
-    }
-    template <typename FormatContext>
-    auto format(const std::vector<std::pair<bookdb::Genre, double>> &hist, FormatContext &fc) const {
-        for (const auto& pair : hist) {
-           format_to(fc.out(), "Author {} : {}\n", pair.first, pair.second);
-        } 
-    }
-};
 
 }
 /*namespace std {
