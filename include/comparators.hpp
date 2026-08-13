@@ -4,10 +4,8 @@
 #include "concepts.hpp"
 
 namespace bookdb::comp {
-// Сравнение по автору (гетерогенное)
 struct LessByAuthor {
     using is_transparent = void;
-
     constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
         return lhs.author < rhs.author;
     }
@@ -18,11 +16,9 @@ struct LessByAuthor {
         return lhs_author < rhs.author;
     }
 };
-// Сравнение по названию (гетерогенное)
+
 struct LessByTitle {
-
     using is_transparent = void;
-
     constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
         return lhs.title < rhs.title;
     }
@@ -33,16 +29,16 @@ struct LessByTitle {
         return lhs_title < rhs.title;
     }
 };
-// Сравнение по году (от старых к новым)
+
 struct LessByYear {
     constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
         return lhs.year < rhs.year;
     }
 };
-// Сравнение по рейтингу (от высшего к низшему)
+
 struct LessByRating {
     constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
-        return lhs.rating < rhs.rating; // Обратите внимание: > для сортировки по убыванию
+        return lhs.rating < rhs.rating; 
     }
 };
 

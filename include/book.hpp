@@ -91,7 +91,4 @@ struct formatter<bookdb::Book, char> {
 
 };
 
-
-// Ваш код для std::formatter<Book> здесь
-
 }  // namespace std

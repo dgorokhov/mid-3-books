@@ -95,9 +95,9 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
     using namespace std;
     //на всякй случай если объект громадный - в куче
     //резервируем место под результат.
-    auto random_books = make_unique<vector<std::reference_wrapper<const bookdb::Book>>>() ;
+    auto random_books = vector<std::reference_wrapper<const bookdb::Book>>() ;
     num = (std::min(cont.size(), num));
-    random_books->reserve(num);
+    random_books.reserve(num);
 
     // инициализация // Вихрь Мерсенна
     std::random_device rd;
@@ -119,7 +119,7 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
         }
         for (auto i = 0; i < cont.size(); ++i)
             //вернуть сброшенные или все (если cont.size==num)
-            if (!bits[i]) random_books->push_back(std::cref(cont[i]));
+            if (!bits[i]) random_books.push_back(std::cref(cont.GetBooks()[i]));
     }
     else {
         while (bits_count < num) {
@@ -127,10 +127,10 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
             if (bits[bitnum]) continue;
             bits[bitnum] = true;
             ++bits_count;
-            random_books->push_back(std::cref(cont[bitnum]));
+            random_books.push_back(std::cref(cont.GetBooks()[bitnum]));
         } 
     }
-    return std::move(random_books); 
+    return random_books;
 }
   
 template <BookContainerLike T, typename Comparator>
