@@ -7,9 +7,10 @@
 
 using namespace bookdb;
 // Тест 1: Проверка инициализации, добавления и стабильности ссылок авторов
-TEST(BookDatabaseTest, BasicInsertionAndAuthorStability) {
+TEST(BookDatabaseTest, PushBackOne) {
     BookDatabase db;
     // Добавляем книгу со строкой, которая будет уничтожена сразу после вызова
+    ASSERT_EQ(db.size(), 0);
     {
         std::string temporary_author = "J.K. Rowling";
         db.PushBack(Book(temporary_author, "Harry Potter", 1997, Genre::SciFi, 4.9, 1000));
@@ -21,7 +22,7 @@ TEST(BookDatabaseTest, BasicInsertionAndAuthorStability) {
     EXPECT_EQ(db.GetAuthors().size(), 1);
 }
 // Тест 2: Проверка метода EmplaceBack и методов контейнерного API
-TEST(BookDatabaseTest, EmplaceBackAndClear) {
+TEST(BookDatabaseTest, AuthorDontDuplicateANDClear) {
     BookDatabase db;
     db.EmplaceBack("George Orwell", "1984", 1949, "Fiction", 4.8, 500);
     db.EmplaceBack("George Orwell", "Animal Farm", 1945, "Fiction", 4.7, 300);

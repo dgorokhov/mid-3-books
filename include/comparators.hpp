@@ -38,9 +38,9 @@ struct LessByYear {
     }
 };
 // Сравнение по рейтингу (от высшего к низшему)
-struct GreaterByRating {
+struct LessByRating {
     constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
-        return lhs.rating > rhs.rating; // Обратите внимание: > для сортировки по убыванию
+        return lhs.rating < rhs.rating; // Обратите внимание: > для сортировки по убыванию
     }
 };
 

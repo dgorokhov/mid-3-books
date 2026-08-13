@@ -15,6 +15,7 @@
 
 namespace bookdb {
 
+    
 template <BookContainerLike BookContainer = std::vector<Book>>
 class BookDatabase {
 public:
@@ -75,7 +76,8 @@ public:
     }
 
     template <typename... Args>
-    reference EmplaceBack(Args&&... args) {
+     requires std::constructible_from<Book, Args...>
+        reference EmplaceBack(Args&&... args) {
         // Конструируем временную книгу для извлечения автора
         Book tmp(std::forward<Args>(args)...);
         
@@ -85,6 +87,20 @@ public:
         books_.push_back(std::move(tmp));
         return books_.back();
     }
+    // 1. Метод поиска: включает BookPredicate
+    template <typename Predicate>
+    requires BookPredicate<Predicate>
+    void FindBooks(Predicate pred) {
+        // Код поиска
+    }
+
+    // 2. Метод сортировки: включает BookComparator
+    template <typename Comparator>
+    requires BookComparator<Comparator>
+    void SortBooks(Comparator comp) {
+        // Код сортировки
+    }
+
 private:
     BookContainer books_;
     AuthorContainer authors_;
@@ -99,7 +115,6 @@ struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {
     constexpr auto parse(format_parse_context &ctx) {
         return ctx.begin();
     }
-
     template <typename FormatContext>
     auto format(const bookdb::BookDatabase<std::vector<bookdb::Book>> &db, FormatContext &fc) const {
         format_to(fc.out(), "BookDatabase (size = {}):\n", db.size());
@@ -116,8 +131,35 @@ struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {
         return fc.out();
     }
 };
-}  // namespace std
+  // namespace std
 
+template <>
+struct formatter<std::vector<std::pair<std::string_view, size_t>>> {
+    constexpr auto parse(format_parse_context &ctx) {
+        return ctx.begin();
+    }
+    template <typename FormatContext>
+    auto format(const std::vector<std::pair<std::string_view, size_t>> &hist, FormatContext &fc) const {
+        for (const auto& pair : hist) {
+           format_to(fc.out(), "Author {} : {}\n", pair.first, pair.second);
+        } 
+    }
+};
+
+template <>
+struct formatter<std::vector<std::pair<bookdb::Genre, double>>> {
+    constexpr auto parse(format_parse_context &ctx) {
+        return ctx.begin();
+    }
+    template <typename FormatContext>
+    auto format(const std::vector<std::pair<bookdb::Genre, double>> &hist, FormatContext &fc) const {
+        for (const auto& pair : hist) {
+           format_to(fc.out(), "Author {} : {}\n", pair.first, pair.second);
+        } 
+    }
+};
+
+}
 /*namespace std {
 template <>
 struct formatter<bookdb::BookDatabase<std::vector<bookdb::Book>>> {

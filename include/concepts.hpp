@@ -13,13 +13,17 @@ concept BookContainerLike = requires(T loc) {
     typename T::iterator;
     typename T::const_iterator;
 
-    // Проверяем обычные методы
-    { loc.begin() } -> std::input_or_output_iterator;
-    { loc.end() }   -> std::sentinel_for<typename T::iterator>;
-    { loc.size() }  -> std::integral;
+    // Правильная проверка: типы из begin/end должны приводиться к итераторам контейнера
+    { loc.begin() }                -> std::convertible_to<typename T::iterator>;
+    { loc.end() }                  -> std::convertible_to<typename T::iterator>;
+    { std::as_const(loc).begin() } -> std::convertible_to<typename T::const_iterator>;
+    { std::as_const(loc).end() }   -> std::convertible_to<typename T::const_iterator>;
     
-    { std::as_const(loc).begin() } -> std::input_or_output_iterator;
-    { std::as_const(loc).end() }   -> std::sentinel_for<typename T::const_iterator>;
+    // Проверка метода очистки
+    { loc.clear() } -> std::same_as<void>;
+    
+    // Проверка, что внутри лежат строго Книги
+    requires std::same_as<typename T::value_type, Book>;
 };
 
 template <typename T>
