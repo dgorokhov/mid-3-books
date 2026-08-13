@@ -97,15 +97,16 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
     //резервируем место под результат.
     auto random_books = vector<std::reference_wrapper<const bookdb::Book>>() ;
     num = (std::min(cont.size(), num));
+    if (!num) return random_books;
     random_books.reserve(num);
 
     // инициализация // Вихрь Мерсенна
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> distrib(0, num );
+    std::uniform_int_distribution<int> distrib(0, cont.size() - 1 );
     //битовый массив для хранения какой объект уже выделен
     size_t bits_count{};
-    std::vector<bool> bits(num, false);
+    std::vector<bool> bits(cont.size(), false);
 
     if (num > cont.size()/2)  { 
     //если вернуь надо больше половины то быстрее и  главное надержнее  пометить те
@@ -113,7 +114,7 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
         num = cont.size() - num; 
         while (bits_count < num) {
             auto bitnum = distrib(gen);
-            if (!bits[bitnum]) continue;
+            if (bits[bitnum]) continue;
             bits[bitnum] = true;
             ++bits_count;
         }
