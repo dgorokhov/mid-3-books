@@ -1,6 +1,7 @@
 #pragma once
 
 #include "book.hpp"
+#include "concepts.hpp"
 
 namespace bookdb::comp {
 // Сравнение по автору (гетерогенное)
@@ -19,6 +20,7 @@ struct LessByAuthor {
 };
 // Сравнение по названию (гетерогенное)
 struct LessByTitle {
+
     using is_transparent = void;
 
     constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
@@ -43,5 +45,6 @@ struct LessByRating {
         return lhs.rating < rhs.rating; // Обратите внимание: > для сортировки по убыванию
     }
 };
+
 
 }  // namespace bookdb::comp

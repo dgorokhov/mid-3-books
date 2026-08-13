@@ -35,7 +35,7 @@ int main(int argc, const char** argv) {
     // Исправлено имя компаратора на GreaterByRating, который мы реализовали
     std::sort(db.begin(), db.end(), comp::LessByRating{});
     std::print("Books sorted by popularity: {}", db);
-Al
+
     std::print ("\n\n==================\n");
     auto avrRating = calculateAverageRating(db);
     std::print("Average books rating in library: {}\n", avrRating);
@@ -49,15 +49,20 @@ Al
     // Ratings
     std::print ("\n\n==================\n");
     auto genreRatings = calculateGenreRatings(db.begin(), db.end());
-    std::print("\n\nAverage ratings by genres: {}\n", bookdb::GenreHistogramView{.data=genreRatings});
+    std ::print("\n\nAverage ratings by genres: {}\n", bookdb::GenreHistogramView{.data=genreRatings});
 
     
     // Filters
-    /*auto filtered = filterBooks(db.begin(), db.end(), all_of(YearBetween(1900, 1999), RatingAbove(4.5)));
+    auto filtered = filterBooks(db, YearBetween(1900, 1999)) ; //all_of(YearBetween(1900, 1999), RatingAbove(4.5)));
     std::print("\n\nBooks from the 20th century with rating ≥ 4.5:\n");
     std::for_each(filtered.cbegin(), filtered.cend(), [](const auto &v) { std::print("{}\n", v.get()); });
 
+    auto filtered2 = filterBooks(db, RatingAbove(4.5));
+    std::print("\n\nBooks from the 20th century with rating ≥ 4.5:\n");
+    std::for_each(filtered2.cbegin(), filtered2.cend(), [](const auto &v) { std::print("{}\n", v.get()); });
+
     // Top 3 books
+    // getTopNBy отбирает по любому компаратору
     auto topBooks = getTopNBy(db, 3, comp::LessByRating{});
     std::print("\n\nTop 3 books by rating:\n");
     std::for_each(topBooks.cbegin(), topBooks.cend(), [](const auto &v) { std::print("{}\n", v.get()); });
@@ -69,7 +74,7 @@ Al
     if (orwellBookIt != db.end()) {
         std::print("\n\nTransparent lookup by authors. Found Orwell's book: {}\n", *orwellBookIt);
     }
-*/
+
     return 0;
 }
 

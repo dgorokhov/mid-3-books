@@ -131,24 +131,20 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
         } 
     }
     return std::move(random_books); 
-
 }
   
 template <BookContainerLike T, typename Comparator>
 auto getTopNBy(BookDatabase<T> &cont, size_t count, Comparator comp) {
 
     std::sort(cont.begin(), cont.end(), [&comp](const auto& lhs, const auto& rhs) {
-            return comp(lhs.first, rhs.first);
+            return comp(lhs, rhs);
     });
     count = std::min(count, cont.GetBooks().size());
     std::vector<std::reference_wrapper<const bookdb::Book>> result;
     for (size_t i = 0; i < count; ++i) {
         result.emplace_back(std::cref(cont.GetBooks()[i]));
-    
+    }
     return result;  //RVO used
 } 
 
-
-
-}  // namespace bookdb
-}
+} // namespace bookdb
