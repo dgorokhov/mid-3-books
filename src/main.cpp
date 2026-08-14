@@ -53,8 +53,8 @@ int main(int argc, const char** argv) {
 
     
     // Filters
-    auto filtered = filterBooks(db, YearBetween(1900, 1999)) ; //all_of(YearBetween(1900, 1999), RatingAbove(4.5)));
-    std::print("\n\nBooks from the 20th century with rating ≥ 4.5:\n");
+    auto filtered = filterBooks(db, any_of(YearBetween(1960, 1999), RatingAbove(4.6)));
+    std::print("\n\nBooks from the 20th century with rating ≥ 4.4:\n");
     std::for_each(filtered.cbegin(), filtered.cend(), [](const auto &v) { std::print("{}\n", v.get()); });
 
     auto filtered2 = filterBooks(db, RatingAbove(4.5));

@@ -92,7 +92,29 @@ double calculateAverageRating(const BookDatabase<T> &books) {
 template <BookContainerLike T>
 auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
 
-    using namespace std;
+ auto random_books = std::vector<std::reference_wrapper<const bookdb::Book>>();
+    
+    num = std::min(cont.size(), num);
+    if (num == 0) return random_books;
+    random_books.reserve(num);
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    // 4. Магия std::sample:
+    // Мы передаем диапазон книг cont.GetBooks(), итератор вставки в наш вектор,
+    // нужное количество элементов и движок генератора.
+    std::sample(
+        cont.GetBooks().begin(), 
+        cont.GetBooks().end(), 
+        std::back_inserter(random_books), 
+        num, 
+        gen
+    );
+
+    return random_books;
+}
+/*    using namespace std;
     //на всякй случай если объект громадный - в куче
     //резервируем место под результат.
     auto random_books = vector<std::reference_wrapper<const bookdb::Book>>() ;
@@ -132,7 +154,8 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
         } 
     }
     return random_books;
-}
+    */
+
   
 template <BookContainerLike T, typename Comparator>
 auto getTopNBy(BookDatabase<T> &cont, size_t count, Comparator comp) {

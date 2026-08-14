@@ -12,7 +12,7 @@ using namespace bookdb;
 ////////////////////////////////////////////////////////////////////////
 // BookDatabase musts
 ////////////////////////////////////////////////////////////////////////
-
+// 1
 TEST(BookDatabaseTest, PushBackOne) {
     BookDatabase db;
     // Добавляем книгу со строкой, которая будет уничтожена сразу после вызова
@@ -27,7 +27,7 @@ TEST(BookDatabaseTest, PushBackOne) {
     EXPECT_EQ(db.GetBooks().front().author, "J.K. Rowling");
     EXPECT_EQ(db.GetAuthors().size(), 1);
 }
-
+// 2
 TEST(BookDatabaseTest, AuthorDontDuplicateANDClear) {
     BookDatabase db;
     db.EmplaceBack("George Orwell", "1984", 1949, "Fiction", 4.8, 500);
@@ -42,7 +42,7 @@ TEST(BookDatabaseTest, AuthorDontDuplicateANDClear) {
     EXPECT_EQ(db.size(), 0);
 }
 
-
+// 3
 TEST(BookDatabaseTest, FormattingAndConcepts) {
     Book b("Isaac Asimov", "Foundation", 1951, Genre::SciFi, 4.9, 800);
     std::string formatted = std::format("{}", b);
@@ -57,7 +57,7 @@ TEST(BookDatabaseTest, FormattingAndConcepts) {
 ////////////////////////////////////////////////////////////////////////////////////
 // SampleRandomBooks
 ////////////////////////////////////////////////////////////////////////////////////
-
+// 4
 TEST(SampleRandomBooksTest, Reqsted11EmptyDatabase) {
     BookDatabase<std::vector<Book>> db;
     // Вызываем выборку 11 книг из абсолютно пустой базы
@@ -68,7 +68,7 @@ TEST(SampleRandomBooksTest, Reqsted11EmptyDatabase) {
     EXPECT_EQ(result.size(), 0);
 }
 
-
+// 5
 TEST(SampleRandomBooksTest, MoreThanSize) {
     BookDatabase<std::vector<Book>> db;
 
@@ -82,6 +82,7 @@ TEST(SampleRandomBooksTest, MoreThanSize) {
     EXPECT_EQ(result[0].get().year, 2001);
 }
 
+// 6
 TEST(SampleRandomBooksTest, Get99from100) {
     BookDatabase<std::vector<Book>> db;
     for (int i = 0; i < 100; ++i) {
@@ -92,4 +93,47 @@ TEST(SampleRandomBooksTest, Get99from100) {
     ASSERT_EQ(db.size(), 100);
     auto result = sampleRandomBooks(db, 99);
     EXPECT_EQ(result.size(), 99);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// ALL_OF
+///////////////////////////////////////////////////////////////////////////////////////////////
+// 7
+TEST(AllOfPredicateTest, AllOfSuccess) {
+    Book matching_book{"Author", "Good SciFi", 2010, Genre::SciFi, 4.8, 100};
+    Book breaking_book{"Author", "Old SciFi", 1950, Genre::SciFi, 4.8, 100};
+    auto condition = all_of(YearAbove(2000), RatingAbove(4.5), GenreIs(Genre::SciFi));
+    EXPECT_TRUE(condition(matching_book));
+    EXPECT_FALSE(condition(breaking_book));
+}
+// 8
+TEST(AllOfPredicateTest, SinglePredicate) {
+    Book book{"Author", "Title", 1990, Genre::Fiction, 3.0, 10};
+    auto single_condition = all_of(YearAbove(2000));
+    EXPECT_FALSE(single_condition(book));
+    auto short_circuit = all_of(YearAbove(2000), [](const Book&) { 
+        return true; 
+    });
+    EXPECT_FALSE(short_circuit(book));
+}
+
+// =====================================================================
+// ANY_OF
+// =====================================================================
+// 9
+TEST(AnyOfPredicateTest, ReturnsTrueWhenAtLeastOneConditionMatches) {
+    Book fiction_book{"Author", "Some Story", 1995, Genre::Fiction, 4.0, 50};
+    Book boring_book{"Author", "Boring Story", 1995, Genre::Unknown, 2.0, 50};
+    auto condition = any_of(YearAbove(2000), GenreIs(Genre::Fiction));
+    EXPECT_TRUE(condition(fiction_book));
+    EXPECT_FALSE(condition(boring_book));
+}
+// 10
+TEST(AnyOfPredicateTest, ShortCircuitsOnFirstTrue) {
+    Book perfect_book{"Author", "Masterpiece", 2025, Genre::Biography, 5.0, 500};
+    auto condition = any_of(YearAbove(2000), [](const Book&) {
+        return false;
+    });
+    EXPECT_TRUE(condition(perfect_book));
 }
