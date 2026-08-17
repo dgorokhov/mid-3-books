@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 #include <unordered_set>
-#include <stdexcept>
 
 #include "book.hpp"
 #include "heterogeneous_lookup.hpp"
@@ -27,7 +26,8 @@ public:
     using const_iterator  = typename BookContainer::const_iterator;
     using size_type       = typename BookContainer::size_type;
 
-    // Выбираем стабильный хэш-сет для уникальных авторов с поддержкой гетерогенного поиска
+    // стабильный хэш-сет для уникальных авторов с поддержкой гетерогенного поиска
+    //flat_set, flat_map не подходят
     using AuthorContainer = 
         std::unordered_set<std::string, TransparentStringHash, TransparentStringEqual>;
 
@@ -49,15 +49,14 @@ public:
     iterator end() noexcept { return books_.end(); }
     const_iterator begin() const noexcept { return books_.begin(); }
     const_iterator end() const noexcept { return books_.end(); }
-    const_iterator cbegin() const noexcept { return books_.cbegin(); }
-    const_iterator cend() const noexcept { return books_.cend(); }
+    const_iterator cbegin() noexcept { return books_.cbegin(); }
+    const_iterator cend()  noexcept { return books_.cend(); }
 
     size_type size() const noexcept { return books_.size(); }
     bool empty() const noexcept { return books_.empty(); }
 
-    // Безопасный доступ к внутреннему состоянию
-    const BookContainer& GetBooks() const noexcept { return books_; }
-    const AuthorContainer& GetAuthors() const noexcept { return authors_; }
+    //const BookContainer& GetBooks() const noexcept { return books_; }
+    
 
     // Добавление элементов
     void PushBack(const Book& book) {
@@ -87,14 +86,25 @@ public:
         books_.push_back(std::move(tmp));
         return books_.back();
     }
-    // 1. Метод поиска: включает BookPredicate
+
+    std::span<const Book> GetBooks() const noexcept {
+        // Конструируем span прямо из внутреннего контейнера.
+        // std::span автоматически подхватит begin() и size() вашего вектора.
+        return std::span<const Book>(books_.data(), books_.size());
+    }
+    std::span<Book> GetBooks() noexcept {
+        return std::span<Book>(books_.data(), books_.size());
+    }
+    const AuthorContainer& GetAuthors() const noexcept { return authors_; }
+    AuthorContainer& GetAuthors() noexcept { return authors_; }
+
+    
     template <typename Predicate>
     requires BookPredicate<Predicate>
     void FindBooks(Predicate pred) {
         // Код поиска
     }
 
-    // 2. Метод сортировки: включает BookComparator
     template <typename Comparator>
     requires BookComparator<Comparator>
     void SortBooks(Comparator comp) {

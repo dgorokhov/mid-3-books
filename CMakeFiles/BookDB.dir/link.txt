@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -Wl,--dependency-file=CMakeFiles/BookDB.dir/link.d CMakeFiles/BookDB.dir/src/main.cpp.o -o BookDB

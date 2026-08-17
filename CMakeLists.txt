@@ -13,6 +13,7 @@ endif()
 
 # Ищем необходимые библиотеки (Conan передаст их сюда)
 find_package(GTest REQUIRED)
+#find_package(jemalloc REQUIRED)
 
 # Список всех заголовочных файлов проекта
 set(HEADER_FILES
@@ -38,6 +39,7 @@ target_include_directories(${PROJECT_NAME}_imp INTERFACE
 
 # Создаём основной исполняемый файл для рантайма
 add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/src/main.cpp")
+#target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_imp jemalloc::jemalloc)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_imp)
 
 # =====================================================================

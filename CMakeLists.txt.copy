@@ -14,7 +14,7 @@ endif()
 # Ищем необходимые библиотеки (Conan передаст их сюда)
 find_package(GTest REQUIRED)
 
-# Список всех заголовочных файлов проекта (лучше перечислить явно, чтобы CMake отслеживал изменения)
+# Список всех заголовочных файлов проекта
 set(HEADER_FILES
     include/book.hpp
     include/book_database.hpp
@@ -40,30 +40,22 @@ target_include_directories(${PROJECT_NAME}_imp INTERFACE
 add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/src/main.cpp")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_imp)
 
-#
+# =====================================================================
 # Тесты
-#
+# =====================================================================
 
 # Рекурсивно ищем все используемые в тестах .cpp файлы
 file(GLOB TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/tests/*.cpp")
 
+# Создаем исполняемый файл тестов
 add_executable(unit_tests ${TEST_SRC_FILES})
 target_link_libraries(unit_tests PRIVATE ${PROJECT_NAME}_imp GTest::GTest GTest::Main)
 
-# Включаем тестирование
+# Middle-фикс: связываем таргеты жесткой зависимостью.
+# Теперь, даже если Conan просит собрать ТОЛЬКО 'unit_tests',
+# компилятор БУДЕТ ОБЯЗАН сначала полностью собрать главный файл BookDB!
+add_dependencies(unit_tests ${PROJECT_NAME})
+
+# Стандартное включение тестирования CMake
 enable_testing()
-add_test(NAME Tests COMMAND unit_tests)
-
-
-# ==========================================
-# Включаем тестирование
-# ==========================================
-
-#Middle-фикс для автоматического запуска:
-# Создаем кастомную цель 'RUN_TESTS' (или 'test'), которую ожидает Conan.
-# Она принудительно вызывает исполняемый файл unit_tests СРАЗУ после успешной компиляции.
-add_custom_target(run_all_tests ALL 
-    COMMAND unit_tests
-    DEPENDS unit_tests
-    COMMENT "Автоматический запуск GTest после компиляции..."
-)
+add_test(NAME unit_tests COMMAND unit_tests)

@@ -29,7 +29,6 @@ template <BookContainerLike T, typename Comparator = TransparentStringLess>
 auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {}) {
 
     // ключ ==  string_view == авторов базы данных
-    //AuthorHistogramView result;
     std::vector<std::pair<std::string_view, size_t>> result;
     // Заранее резервируем память под всех авторов для скорости
     result.reserve(cont.GetAuthors().size());
@@ -53,16 +52,15 @@ auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {})
 
 template <BookIterator It, BookSentinel<It> Sent>
 auto calculateGenreRatings(It first, Sent last) {
-    // 1. Создаем промежуточную мапу: Ключ — Genre, Значение — пара {сумма_рейтингов, количество_книг}
+
+    //Создаем промежуточную мапу: Ключ — Genre, Значение — пара {сумма_рейтингов, количество_книг}
     std::unordered_map<Genre, std::pair<double, int>> hist;
-    
     for (auto it = first; it != last; ++it) {
-        // Доступ через точку, так как hist[...] возвращает ссылку на пару, а не указатель
         hist[it->genre].first += it->rating;
         hist[it->genre].second++;
     }
 
-    // 2. Переносим данные в плоский вектор для вычисления среднего и последующей сортировки
+    //Переносим данные в плоский вектор для вычисления среднего и последующей сортировки
     std::vector<std::pair<Genre, double>> genre_rt;
     genre_rt.reserve(hist.size());
 
@@ -101,9 +99,6 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
-    // 4. Магия std::sample:
-    // Мы передаем диапазон книг cont.GetBooks(), итератор вставки в наш вектор,
-    // нужное количество элементов и движок генератора.
     std::sample(
         cont.GetBooks().begin(), 
         cont.GetBooks().end(), 
@@ -114,7 +109,8 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
 
     return random_books;
 }
-/*    using namespace std;
+/*  старый вариант 
+     using namespace std;
     //на всякй случай если объект громадный - в куче
     //резервируем место под результат.
     auto random_books = vector<std::reference_wrapper<const bookdb::Book>>() ;
@@ -126,7 +122,7 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distrib(0, cont.size() - 1 );
-    //битовый массив для хранения какой объект уже выделен
+    //битовый массив для хранения какой объект уже взят для выборки
     size_t bits_count{};
     std::vector<bool> bits(cont.size(), false);
 

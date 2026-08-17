@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/workspaces/mid-3-books",
+  "command": "/usr/bin/c++  -I/workspaces/mid-3-books/include -g -std=c++23 -fmax-errors=3 -o CMakeFiles/BookDB.dir/src/main.cpp.o -c /workspaces/mid-3-books/src/main.cpp",
+  "file": "/workspaces/mid-3-books/src/main.cpp",
+  "output": "CMakeFiles/BookDB.dir/src/main.cpp.o"
+},
+{
+  "directory": "/workspaces/mid-3-books",
+  "command": "/usr/bin/c++  -I/workspaces/mid-3-books/include -g -std=c++23 -fmax-errors=3 -DGTEST_HAS_PTHREAD=1 -o CMakeFiles/unit_tests.dir/tests/db_test.cpp.o -c /workspaces/mid-3-books/tests/db_test.cpp",
+  "file": "/workspaces/mid-3-books/tests/db_test.cpp",
+  "output": "CMakeFiles/unit_tests.dir/tests/db_test.cpp.o"
+},
+{
+  "directory": "/workspaces/mid-3-books",
+  "command": "/usr/bin/c++  -I/workspaces/mid-3-books/include -g -std=c++23 -fmax-errors=3 -DGTEST_HAS_PTHREAD=1 -o CMakeFiles/unit_tests.dir/tests/main.cpp.o -c /workspaces/mid-3-books/tests/main.cpp",
+  "file": "/workspaces/mid-3-books/tests/main.cpp",
+  "output": "CMakeFiles/unit_tests.dir/tests/main.cpp.o"
+}
+]

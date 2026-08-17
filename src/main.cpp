@@ -32,7 +32,6 @@ int main(int argc, const char** argv) {
     std::print("Books sorted by author: {}", db);
 
     std::print ("\n\n==================\n");
-    // Исправлено имя компаратора на GreaterByRating, который мы реализовали
     std::sort(db.begin(), db.end(), comp::LessByRating{});
     std::print("Books sorted by popularity: {}", db);
 

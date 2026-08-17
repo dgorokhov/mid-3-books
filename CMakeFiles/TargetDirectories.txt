@@ -1,0 +1,5 @@
+/workspaces/mid-3-books/CMakeFiles/BookDB.dir
+/workspaces/mid-3-books/CMakeFiles/unit_tests.dir
+/workspaces/mid-3-books/CMakeFiles/test.dir
+/workspaces/mid-3-books/CMakeFiles/edit_cache.dir
+/workspaces/mid-3-books/CMakeFiles/rebuild_cache.dir

@@ -1,14 +1,12 @@
 #pragma once
 
 #include <format>
-#include <stdexcept>
 #include <string_view>
 #include <array>
+
 namespace bookdb {
 
 enum class Genre { Fiction, NonFiction, SciFi, Biography, Mystery, Unknown };
-
-// Ваш код для constexpr преобразования строк в enum::Genre и наоборот здесь
 
 // constexpr преобразование строк в Genre
 constexpr Genre GenreFromString(std::string_view s) {
