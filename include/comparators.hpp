@@ -42,5 +42,10 @@ struct LessByRating {
     }
 };
 
+struct GreaterByRating {
+    constexpr bool operator()(const Book& lhs, const Book& rhs) const noexcept {
+        return lhs.rating > rhs.rating; 
+    }
+};
 
 }  // namespace bookdb::comp

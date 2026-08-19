@@ -24,40 +24,12 @@ namespace bookdb {
 	в виде std::vector<std::reference_wrapper<const Book>>. Это единственная функция, которой разрешено изменять переданный контейнер.
 =Все функции, за исключением последней, не должны модифицировать входные параметры.
 */    
-/*
-template <BookContainerLike T, typename Comparator = TransparentStringLess>
-auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {}) {
-
-    // ключ ==  string_view == авторов базы данных
-    std::flat_map<std::pair<std::string_view, size_t>> result;
-    // Заранее резервируем память под всех авторов для скорости
-    //result.reserve(cont.GetAuthors().size());
-    for (const auto& author : cont.GetAuthors()) {
-        result[author] = 0;
-    }
-    // Проходим по всем книгам базы данных
-    for (const auto& book : cont.GetBooks()) {
-        auto it = std::find_if(result.begin(), result.end(), 
-            [&book](const auto& pair) { return pair.first == book.author; });
-        
-        if (it != result.end()) {
-            it->second++; // Увеличиваем счетчик книг автора
-        }
-    }
-    std::sort(result.begin(), result.end(), [&comp](const auto& lhs, const auto& rhs) {
-        return comp(lhs.first, rhs.first);
-    });
-    return result;
-}
-*/
 
 template <BookContainerLike T, typename Comparator = TransparentStringLess>
-auto buildAuthorHistogramFlat(const BookDatabase<T> &cont) {
+[[nodiscard]] auto buildAuthorHistogramFlat(const BookDatabase<T> &cont) {  
 
     // ключ ==  string_view == авторов базы данных
     std::flat_map<std::string_view, size_t> result;
-    // Заранее резервируем память под всех авторов для скорости
-    //result.reserve(cont.GetAuthors().size());
     for (const auto& author : cont.GetAuthors()) {
         result[author] = 0;
     }
@@ -70,17 +42,14 @@ auto buildAuthorHistogramFlat(const BookDatabase<T> &cont) {
             it->second++; // Увеличиваем счетчик книг автора
         }
     }
-    //std::sort(result.begin(), result.end(), [&comp](const auto& lhs, const auto& rhs) {
-    ///    return comp(lhs.first, rhs.first);
-    //});
     return result;
 }
 
 template <BookIterator It, BookSentinel<It> Sent>
-auto calculateGenreRatings(It first, Sent last) {
+[[nodiscard]] auto calculateGenreRatings(It first, Sent last) {
 
     //Создаем промежуточную мапу: Ключ — Genre, Значение — пара {сумма_рейтингов, количество_книг}
-    std::unordered_map<Genre, std::pair<double, int>> hist;
+    std::flat_map<Genre, std::pair<double, int>> hist;
     for (auto it = first; it != last; ++it) {
         hist[it->genre].first += it->rating;
         hist[it->genre].second++;
@@ -114,7 +83,7 @@ double calculateAverageRating(const BookDatabase<T> &books) {
 
 
 template <BookContainerLike T>
-auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
+[[nodiscard]] auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
 
  auto random_books = std::vector<std::reference_wrapper<const bookdb::Book>>();
     
@@ -135,52 +104,9 @@ auto sampleRandomBooks(const BookDatabase<T> &cont, size_t num) {
 
     return random_books;
 }
-/*  старый вариант 
-     using namespace std;
-    //на всякй случай если объект громадный - в куче
-    //резервируем место под результат.
-    auto random_books = vector<std::reference_wrapper<const bookdb::Book>>() ;
-    num = (std::min(cont.size(), num));
-    if (!num) return random_books;
-    random_books.reserve(num);
-
-    // инициализация // Вихрь Мерсенна
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> distrib(0, cont.size() - 1 );
-    //битовый массив для хранения какой объект уже взят для выборки
-    size_t bits_count{};
-    std::vector<bool> bits(cont.size(), false);
-
-    if (num > cont.size()/2)  { 
-    //если вернуь надо больше половины то быстрее и  главное надержнее  пометить те
-    //записи кторые будут отброшены т.к. случ. распределение не гарантирует прохд по всем записям    
-        num = cont.size() - num; 
-        while (bits_count < num) {
-            auto bitnum = distrib(gen);
-            if (bits[bitnum]) continue;
-            bits[bitnum] = true;
-            ++bits_count;
-        }
-        for (auto i = 0; i < cont.size(); ++i)
-            //вернуть сброшенные или все (если cont.size==num)
-            if (!bits[i]) random_books.push_back(std::cref(cont.GetBooks()[i]));
-    }
-    else {
-        while (bits_count < num) {
-            auto bitnum = distrib(gen);
-            if (bits[bitnum]) continue;
-            bits[bitnum] = true;
-            ++bits_count;
-            random_books.push_back(std::cref(cont.GetBooks()[bitnum]));
-        } 
-    }
-    return random_books;
-    */
-
   
 template <BookContainerLike T, typename Comparator>
-auto getTopNBy(BookDatabase<T> &cont, size_t count, Comparator comp) {
+[[nodiscard]] auto getTopNBy(BookDatabase<T> &cont, size_t count, Comparator comp) {
 
     std::sort(cont.begin(), cont.end(), [&comp](const auto& lhs, const auto& rhs) {
             return comp(lhs, rhs);

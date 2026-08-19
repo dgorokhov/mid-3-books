@@ -62,7 +62,7 @@ int main(int argc, const char** argv) {
 
     // Top 3 books
     // getTopNBy отбирает по любому компаратору
-    auto topBooks = getTopNBy(db, 3, comp::LessByRating{});
+    auto topBooks = getTopNBy(db, 3, comp::GreaterByRating{});
     std::print("\n\nTop 3 books by rating:\n");
     std::for_each(topBooks.cbegin(), topBooks.cend(), [](const auto &v) { std::print("{}\n", v.get()); });
 
@@ -71,7 +71,7 @@ int main(int argc, const char** argv) {
                             { return v.author == "George Orwell"; 
                             });
     if (orwellBookIt != db.end()) {
-        std::print("\n\nTransparent lookup by authors. Found Orwell's book: {}\n", *orwellBookIt);
+        std::print("\n\nTransparent lookup by authors. Found Orwell's book: {}\n\n", *orwellBookIt);
     }
 
     return 0;

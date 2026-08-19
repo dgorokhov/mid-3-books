@@ -55,9 +55,6 @@ public:
     size_type size() const noexcept { return books_.size(); }
     bool empty() const noexcept { return books_.empty(); }
 
-    //const BookContainer& GetBooks() const noexcept { return books_; }
-    
-
     // Добавление элементов
     void PushBack(const Book& book) {
         // 1. Вставляем автора в стабильный сет. Если он уже есть, вернется существующий.
