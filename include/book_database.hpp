@@ -5,7 +5,7 @@
 #include <initializer_list>
 #include <string>
 #include <string_view>
-#include <set>
+#include <flat_map>
 #include <vector>
 #include <unordered_set>
 
@@ -117,7 +117,7 @@ private:
 };
 
 struct AuthorHistogramView {
-    const std::vector<std::pair<std::string_view, size_t>>& data;
+    const std::flat_map<std::string_view, size_t>& data;
 };
 
 struct GenreHistogramView {

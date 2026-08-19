@@ -1,9 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include <bitset>
 #include <iterator>
-#include <stdexcept>
+#include <flat_set>
+#include <flat_map>
 #include <unordered_map>
 #include <random>
 #include <string_view>
@@ -24,16 +24,16 @@ namespace bookdb {
 	в виде std::vector<std::reference_wrapper<const Book>>. Это единственная функция, которой разрешено изменять переданный контейнер.
 =Все функции, за исключением последней, не должны модифицировать входные параметры.
 */    
-
+/*
 template <BookContainerLike T, typename Comparator = TransparentStringLess>
 auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {}) {
 
     // ключ ==  string_view == авторов базы данных
-    std::vector<std::pair<std::string_view, size_t>> result;
+    std::flat_map<std::pair<std::string_view, size_t>> result;
     // Заранее резервируем память под всех авторов для скорости
-    result.reserve(cont.GetAuthors().size());
+    //result.reserve(cont.GetAuthors().size());
     for (const auto& author : cont.GetAuthors()) {
-        result.emplace_back(author, 0);
+        result[author] = 0;
     }
     // Проходим по всем книгам базы данных
     for (const auto& book : cont.GetBooks()) {
@@ -47,6 +47,32 @@ auto buildAuthorHistogramFlat(const BookDatabase<T> &cont, Comparator comp = {})
     std::sort(result.begin(), result.end(), [&comp](const auto& lhs, const auto& rhs) {
         return comp(lhs.first, rhs.first);
     });
+    return result;
+}
+*/
+
+template <BookContainerLike T, typename Comparator = TransparentStringLess>
+auto buildAuthorHistogramFlat(const BookDatabase<T> &cont) {
+
+    // ключ ==  string_view == авторов базы данных
+    std::flat_map<std::string_view, size_t> result;
+    // Заранее резервируем память под всех авторов для скорости
+    //result.reserve(cont.GetAuthors().size());
+    for (const auto& author : cont.GetAuthors()) {
+        result[author] = 0;
+    }
+    // Проходим по всем книгам базы данных
+    for (const auto& book : cont.GetBooks()) {
+        auto it = std::find_if(result.begin(), result.end(), 
+            [&book](const auto& pair) { return pair.first == book.author; });
+        
+        if (it != result.end()) {
+            it->second++; // Увеличиваем счетчик книг автора
+        }
+    }
+    //std::sort(result.begin(), result.end(), [&comp](const auto& lhs, const auto& rhs) {
+    ///    return comp(lhs.first, rhs.first);
+    //});
     return result;
 }
 
