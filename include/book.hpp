@@ -19,12 +19,16 @@ constexpr Genre GenreFromString(std::string_view s) {
 }
 
 constexpr std::string_view StringFromGenre(Genre g) {
-    static constexpr std::array<std::string_view, 6> genreStrings
-        {"Fiction",   "NonFiction", "SciFi",
-        "Biography", "Mystery",    "Unknown"};
-    return genreStrings[static_cast<int>(g)];
+    switch (g) {
+        case Genre::Fiction: return "Fiction";
+        case Genre::NonFiction: return "NonFiction";
+        case Genre::SciFi: return "SciFi";
+        case Genre::Biography: return "Biography";
+        case Genre::Mystery: return "Mystery";
+        default : return "Unknown";
+    }
 }
-
+ 
 struct Book {
     // string_view для экономии памяти, чтобы ссылаться на оригинальную строку, хранящуюся в другом контейнере
     std::string_view author;

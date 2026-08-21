@@ -5,7 +5,7 @@
 #include <initializer_list>
 #include <string>
 #include <string_view>
-#include <set>
+#include <flat_map>
 #include <vector>
 #include <unordered_set>
 
@@ -54,9 +54,6 @@ public:
 
     size_type size() const noexcept { return books_.size(); }
     bool empty() const noexcept { return books_.empty(); }
-
-    //const BookContainer& GetBooks() const noexcept { return books_; }
-    
 
     // Добавление элементов
     void PushBack(const Book& book) {
@@ -117,7 +114,7 @@ private:
 };
 
 struct AuthorHistogramView {
-    const std::vector<std::pair<std::string_view, size_t>>& data;
+    const std::flat_map<std::string_view, size_t>& data;
 };
 
 struct GenreHistogramView {
